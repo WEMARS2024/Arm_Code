@@ -16,7 +16,8 @@ void setup() {
   Serial2.begin(115200, SERIAL_8N1, RX2, TX2); // Initialize Serial2 for UART communication at 115200 baud rate
 
   // Attach the servo to a specific GPIO pin on the ESP32
-  servo1.attach(baseX);
+  servo1.attach(baseX, 500, 2400);
+  servo1.setPeriodHertz(50);
 
   Serial.println("Setup complete. Waiting for data...");
 }
@@ -53,4 +54,5 @@ void processCommand(String data) {
   Serial.print(value);
   Serial.print(" -> Servo position: ");
   Serial.println(servo1Pos);
+  delay(10);
 }
