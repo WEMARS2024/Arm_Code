@@ -21,15 +21,14 @@ class Serial_Wrapper:
     def flush_buffer(self):
         self.ser.flushOutput()
 
-def format_joystick_data(data_list):
-    # Only take the first element (baseX) for simplicity
-    value = data_list[0]
-    formatted_data = f"{value:.2f}"
-    return f"[{formatted_data}]"
+def format_joystick_data(axis_label, input):
+    formatted_value = f"{-abs(input):.2f}" if input < 0 else f"{abs(input):.2f}"
+    return f"({axis_label}, {formatted_value})"
 
 async def receive_data():
     uri = 'ws://172.20.10.9:5678'  # Replace with the server's IP address
     serial_wrapper = Serial_Wrapper(device='/dev/serial0', baud=115200)
+    labels = ['RX', 'RY', 'LX', 'LY', 'RT', 'LT']
 
     try:
         async with websockets.connect(uri, timeout=20) as websocket:
@@ -40,10 +39,15 @@ async def receive_data():
                     
                     parsed_data = eval(data)
                     print(parsed_data)
+
+                    for i in range(len(labels)):
+                        label = labels[i]
+                        input = parsed_data[i]
+
+                        formatted_data = format_joystick_data(label, input).encode() + b'\n'
+                        print(formatted_data)
+                        serial_wrapper.send_data(formatted_data)                   
                     
-                    formatted_data = format_joystick_data(parsed_data).encode() + b'\n'
-                    print(f"Formatted values: {formatted_data}")
-                    serial_wrapper.send_data(formatted_data)
                 except websockets.exceptions.ConnectionClosed as e:
                     print(f"WebSocket connection closed: {e}")
                     break
