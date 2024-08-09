@@ -70,10 +70,12 @@ void setup() {
   wristX.write(90);
   forearmY.write(90);
   claw.write(90);
+
+  ESP32Can.CANInit();
+
 }
 
 void loop() {
-  Serial.println(rx_frame.MsgID);
   if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE) 
   {
     if (rx_frame.MsgID == 0x0C0C1801) 
