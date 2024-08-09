@@ -442,7 +442,7 @@ void loop() {
     }
   }
 
-  if ((ul5mS % 40) == 0) // Send joystick inputs as a single CAN packet every 40ms
+  if ((ul5mS % 50) == 0) // Send joystick inputs as a single CAN packet every 50ms
   {
     if (btEnabled) {
       tx_frame.FIR.B.FF = CAN_frame_ext;
